@@ -39,7 +39,8 @@ $('#faql').innerHTML=[['Does Hardlaunch replace my sales team?','No. It handles 
 const ENDPOINT=CONFIG.ENDPOINT;
 const RID=()=>crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
 let rid=RID(),busy=0;
-async function submitPilotRequest(d){if(!ENDPOINT)throw new Error('not_connected');const c=new AbortController(),t=setTimeout(()=>c.abort(),20000);
+async function submitNetlifyForm(d){const r=await fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({'form-name':'pilot-request',...d}).toString()});if(!r.ok)throw new Error('netlify_form_failed');return{ok:true}}
+async function submitAppsScript(d){if(!ENDPOINT)throw new Error('not_connected');const c=new AbortController(),t=setTimeout(()=>c.abort(),20000);
 try{const r=await fetch(ENDPOINT,{method:'POST',signal:c.signal,headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(d)}),j=await r.json();if(!j.ok)throw new Error(j.error||'failed');return j}finally{clearTimeout(t)}}
 const chk=x=>{const v=x.value.trim();return!v?'Required':x.type=='email'&&!/^\S+@\S+\.\S+$/.test(v)?'Enter a valid email, like name@company.com':x.type=='tel'&&v.replace(/\D/g,'').length<8?'Enter a phone number with at least 8 digits':''};
 const mark=x=>{const m=chk(x),l=x.closest('label');let n=l.querySelector('.fe');if(!n){n=document.createElement('small');n.className='fe';l.append(n)}n.textContent=m;x.setAttribute('aria-invalid',!!m);return m};
@@ -48,7 +49,7 @@ const send=async()=>{if(busy)return;const f=$('#f'),b=$('#sb'),bad=$$('[required
 $('#er').textContent=bad.length?'Please fix the highlighted fields.':'';
 if(bad.length){$('[aria-invalid=true]',f).focus();return}
 busy=1;b.classList.add('ld');b.textContent='Sending';const d={rid};$$('[name]',f).forEach(x=>d[x.name]=x.value.trim());let ok=0;
-try{await submitPilotRequest(d);ok=1;rid=RID();$('#em').textContent=d.email;f.style.display='none';$('#ok').style.display='block';$('#ok').focus()}
+try{const rs=await Promise.allSettled([submitNetlifyForm(d),submitAppsScript(d)]);if(!rs.some(r=>r.status=='fulfilled'))throw rs[1].reason;ok=1;rid=RID();$('#em').textContent=d.email;f.style.display='none';$('#ok').style.display='block';$('#ok').focus()}
 catch(e){$('#er').textContent=e.message=='not_connected'?'This form isn’t connected to its backend yet, so nothing was sent.':e.message=='invalid'?'Some details were not accepted. Please check them and try again.':e.name=='AbortError'?'That took longer than expected, so your request may not have gone through. Please try again.':'We couldn’t send your request. Check your connection and try again.'}
 busy=0;b.classList.remove('ld');b.textContent=ok?'Request Pilot':'Try again'};
 $('#sb').onclick=send;$$('#f input').forEach(i=>i.onkeydown=e=>{if(e.key=='Enter')send()});

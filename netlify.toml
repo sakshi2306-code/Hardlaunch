@@ -1,2 +1,7 @@
 [build]
 publish = "site"
+
+# This is a plain static site, not Next.js. Skip the Next.js runtime plugin
+# that is enabled in the Netlify UI so it doesn't fail the build.
+[build.environment]
+NETLIFY_NEXT_PLUGIN_SKIP = "true"
