@@ -116,6 +116,9 @@
 <label class="fw">Biggest sales challenge<textarea name="challenge" rows="3"></textarea></label>
 <button class="btn p fw" type="button" id="sb">Request Pilot</button><p class="er fw" id="er" role="alert"></p></div>
 <div id="ok" class="c" role="status" tabindex="-1"><svg class="tick" viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10" opacity=".35"/><path d="M7 12.5l3.2 3.2L17 9"/></svg><h3>Thanks. Your request has been received.</h3><p class="mu">We’ll get back to you shortly at <b id="em"></b>.</p></div></section>
+<form name="pilot-request" method="POST" data-netlify="true" netlify-honeypot="website" hidden>
+<input type="hidden" name="form-name" value="pilot-request"><input type="hidden" name="subject" value="New pilot request from %{siteName} (%{submissionId})">
+<input name="website"><input name="name"><input name="company"><input name="email" type="email"><input name="phone" type="tel"><input name="type"><input name="vol"><input name="src"><input name="pilot"><textarea name="challenge"></textarea><input name="rid"></form>
 </main>
 <footer><p class="logo">HARDLAUNCH</p><p>AI Sales Automation for Modern Businesses.</p>
 <p class="fl"><a href="#platform">Platform</a><a href="#how">How It Works</a><a href="#solutions">Solutions</a><a href="#pilot">Pilot</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a><a href="#contact">Contact</a></p>
